@@ -1,20 +1,28 @@
 <!doctype html>
-<html>
-  <script>
-    let request = new XMLHttpRequest();
+<html lang="en-US">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+  </head>
+  <body>
+    <ul>
+      <li><a href="#" data-block="gold">Gold Sponsors</a></li>
+      <li><a href="#" data-block="silver">Silver Sponsors</a></li>
+      <li><a href="#" data-block="bronze">Bronze Sponsors</a></li>
+    </ul>
+    
+    <article data-block="gold">
+      <h1>Gold Sponsors</h1>
+    </article>
+    
+    <article data-block="silver">
+      <h1>Silver Sponsors</h1>
+    </article>
+    
+    <article data-block="bronze">
+      <h1>Bronze Sponsors</h1>
+    </article>
 
-    request.open('POST', 'https://ls-230-web-store-demo.herokuapp.com/v1/products');
-
-    let data = {name: 'pencil', sku: 'pen15', price: 10};
-    let json = JSON.stringify(data);
-
-    request.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
-    request.setRequestHeader('Authorization', 'token AUTH_TOKEN');
-
-    request.addEventListener('load', event => {
-      console.log(`Added ${request.responseText}`);
-    })
-
-    request.send(json);
-  </script>
+    <script src="../test.js"></script>
+  </body>
 </html>
