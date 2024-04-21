@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  </head>
+<body>
+  <header>
+    <div id="filters">
+
+    </div>
+  </header>
+  <body>
+    <div id="cars">
+
+    </div>
+  </body>
+
+  <script id="filters_template" type="text/x-handlebars-template">
+    <label for="make_select">Make</label>
+    <select id="make_select">
+      <option value="">All</option>
+      {{#each makes}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    <label for="model_select">Model</label>
+    <select id="model_select">
+      <option value="">All</option>
+      {{#each models}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    <label for="year_select">Year</label>
+    <select id="year_select">
+      <option value="">All</option>
+      {{#each years}}
+        <option value="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+    <button class="filter_btn">Filter</button>
+  </script>
+
+  <script id="cars_template" type="text/x-handlebars-template>">
+    <div class='car'>
+      {{#each cars}}
+      <!-- <figure><img src="{{image}}"></figure> -->
+        <h3>{{make}} {{model}}</h3>
+        <li>Year: {{year}}</li>
+        <li>Price: {{price}}</li>
+      {{/each}}
+    </div>
+  </script>
+
+  <script>
+    const cars = [
+      { make: 'Honda', image: 'images/honda-accord-2005.jpg', model: 'Accord', year: 2005, price: 7000 },
+      { make: 'Honda', image: 'images/honda-accord-2008.jpg', model: 'Accord', year: 2008, price: 11000 },
+      { make: 'Toyota', image: 'images/toyota-camry-2009.jpg', model: 'Camry', year: 2009, price: 12500 },
+      { make: 'Toyota', image: 'images/toyota-corrolla-2016.jpg', model: 'Corolla', year: 2016, price: 15000 },
+      { make: 'Suzuki', image: 'images/suzuki-swift-2014.jpg', model: 'Swift', year: 2014, price: 9000 },
+      { make: 'Audi', image: 'images/audi-a4-2013.jpg', model: 'A4', year: 2013, price: 25000 },
+      { make: 'Audi', image: 'images/audi-a4-2013.jpg', model: 'A4', year: 2013, price: 26000 },
+    ];
+
+    let uniqMakes = [];
+    let uniqModels = [];
+    let uniqYears = [];
+
+    cars.forEach(ele => {
+      if (!uniqMakes.includes(ele.make)) {
+        uniqMakes.push(ele.make);
+      }
+      if (!uniqModels.includes(ele.model)) {
+        uniqModels.push(ele.model);
+      }
+      if (!uniqYears.includes(ele.year)) {
+        uniqYears.push(ele.year);
+      }
+    });
+
+    let data = {
+      'makes': uniqMakes,
+      'models': uniqModels,
+      'years': uniqYears,
+    };
+
+    let filtersTemplate = Handlebars.compile($('#filters_template').html());
+    document.getElementById('filters').innerHTML = (filtersTemplate(data));
+
+    let carsTemplate = Handlebars.compile($('#cars_template').html());
+    document.getElementById('cars').innerHTML = carsTemplate({cars: cars});
+
+    let button = document.querySelector('button');
+
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      
+      let make = document.getElementById('make_select').value;
+      let model = document.getElementById('model_select').value;
+      let year = Number(document.getElementById('year_select').value);
+
+      let filters = {};
+
+      if (make) filters.make = make;
+      if (model) filters.model = model;
+      if (year) filters.year = year;
+
+      // console.log(filters);
+
+      let data = cars;
+
+      for (let key in filters) {
+        data = data.filter(ele => {
+          return ele[key] === filters[key];
+        });
+      }
+
+      document.getElementById('cars').innerHTML = carsTemplate({cars: data});
+    });
+
+    document.getElementById('make_select').addEventListener('change', event => {
+      let selection = event.target.value;
+
+      let oneMake = [];
+
+      cars.forEach(ele => {
+        if (ele['make'] === selection) {
+          oneMake.push(ele);
+        }
+      });
+
+      if (selection === '') {
+        oneMake = cars;
+      }
+
+      let uniqModels = [];
+
+      oneMake.forEach(ele => {
+        if (!uniqModels.includes(ele.model)) {
+        uniqModels.push(ele.model);
+        }
+      });
+
+      let uniqMakes = [];
+      let uniqYears = [];
+
+      cars.forEach(ele => {
+        if (!uniqMakes.includes(ele.make)) {
+          uniqMakes.push(ele.make);
+        }
+        if (!uniqYears.includes(ele.year)) {
+          uniqYears.push(ele.year);
+        }
+      });
+
+      let data = {
+        'makes': uniqMakes,
+        'models': uniqModels,
+        'years': uniqYears,
+      };
+
+      document.getElementById('filters').innerHTML = (filtersTemplate(data));
+    });
+  </script>
+
+</body>
+</html>

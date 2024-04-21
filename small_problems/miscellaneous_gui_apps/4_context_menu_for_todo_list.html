@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  </head>
+<body>
+  <h2>Todos</h2>
+
+  <ul id="todos">
+  </ul>
+
+  <div id="delete">
+    
+  </div>
+
+  <div id="menu">a</div>
+  
+  <script id='todosTemplate' type='text/x-handlebars'>
+    {{#each items}}
+      <li id={{id}}>
+        {{title}}
+        <!-- <a href='' id=delete_{{id}}>Delete</a> -->
+      </li>
+    {{/each}}
+  </script>
+
+  <script id="deleteTemplate" type="text/x-handlebars">
+    Confirm delete?
+    <a href='' id='yes'>Yes</a>
+    <a href='' id='no'>No</a>
+  </script>
+
+  <script id="menuTemplate" type="text/x-handlebars">
+    <ul id='menu'>
+      <li id='edit'>Edit Todo</li>
+      <li id='details'>Show Details</li>
+      <li data-id="{{todoId}}"><a href=''>Delete</a></li>
+    </ul>
+  </script>
+
+  <script>
+    todo_items = [
+      { id: 1, title: 'Homework' },
+      { id: 2, title: 'Shopping' },
+      { id: 3, title: 'Calling Mom' },
+      { id: 4, title: 'Coffee with John '}
+    ];
+
+    let todosTemplate = Handlebars.compile($('#todosTemplate').html());
+    let deleteTemplate = Handlebars.compile($('#deleteTemplate').html());
+    let menuTemplate = Handlebars.compile($('#menuTemplate').html());
+
+    $('ul').html(todosTemplate({items: todo_items}));
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelector('ul').addEventListener('contextmenu', event => {
+        event.preventDefault();
+
+        let id = String(event.target['id']);
+        let item = {'todoId': id};
+
+        $('div#menu').html(menuTemplate(item));
+
+        document.querySelector('#menu').addEventListener('click', event => {
+            event.preventDefault();
+
+            if (event.target.nodeName === 'A') {
+              let dataId = event.target.parentElement.getAttribute('data-id');
+              let $todoItem = document.getElementById(dataId);
+
+              $('div#delete').html(deleteTemplate({}));
+
+              document.querySelector('div#delete').addEventListener('click', event => {
+                event.preventDefault();
+
+                console.log('clicked');
+                
+                if (event.target.id === 'yes') {
+                  $todoItem.remove();
+                  $('div#delete').html('');
+                  $('#menu').html('');
+                  $todoItem = null;
+                } else {
+                  $('div#delete').html('');
+                  $('#menu').html('');
+                  $todoItem = null;
+                }
+              });
+            }
+          });
+
+      });
+
+      
+    });
+
+  </script>
+
+</body>
+</html>

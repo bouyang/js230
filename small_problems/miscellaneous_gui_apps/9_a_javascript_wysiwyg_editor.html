@@ -1,0 +1,109 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Rich Text Editor</title>
+  <style>
+    
+
+body {
+  background: #55f;
+}
+#editor {
+  width: 800px;
+  height: 500px;
+  border: 1px solid #ccc;
+  font-family: Helvetica, Arial, 'sans-serif';
+  margin: 30px auto;
+}
+
+h1 {
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+}
+
+.text_box {
+  height: 100%;
+  max-height: 470px;
+  overflow: auto;
+  background: #fff;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.text_box:focus {
+  background: #fff;
+  outline: none;
+}
+
+.buttons {
+  height: 30px;
+  border-bottom: 1px solid #ccc;
+  font-family: 'Times New Roman', serif;
+  background: #ccc;
+  padding: 5px 0 0 5px;
+  box-sizing: border-box;
+}
+
+button {
+  background: none;
+  border: none;
+  width: 125px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+button.pushed {
+  border: #bbb;
+  background: #f9f9f9; 
+}
+
+button:hover {
+  border: #bbb;
+  background: #f9f9f9;
+}
+  </style>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <h1>Rich Text Editor</h1>
+  <div id="editor">
+    <div class="buttons">
+      <button class="bold fa fa-bold">bold</button>
+      <button class="italicize fa fa-italic">italic</button>
+      <button class="underline fa fa-underline">underline</button>
+      <button class="strikethrough fa fa-strikethrough">strikethrough</button>
+      <button class="link fa fa-link">createLink</button>
+      <button class="ul fa fa-list-ul">insertUnorderedList</button>
+      <button class="ol fa fa-list-ol">insertOrderedList</button>
+      <button class="al_left fa fa-align-left">justifyLeft</button>
+      <button class="al_right fa fa-align-right">justifyRight</button>
+      <button class="al_center fa fa-align-center pushed">justifyCenter</button>
+      <button class="al_justify fa fa-align-justify">justifyFull</button>
+    </div>
+    <div class="text_box" contenteditable="true"></div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', event => {
+        let selected;
+
+        document.addEventListener('mouseup', event => {
+          console.log(document.getSelection().toString());
+          selected = document.getSelection();
+        });
+
+        document.querySelector('.buttons').addEventListener('click', event => {
+          if (event.target.textContent === 'createLink') {
+            let url = prompt('Insert url');
+            document.execCommand(event.target.textContent, true, url);
+          } else {
+            document.execCommand(event.target.textContent);
+          }
+        })
+      })
+    </script>
+  </div>
+
+
+</body></html>

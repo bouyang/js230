@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  </head>
+<body>
+  <span id="hours">
+    00
+  </span>
+  :
+  <span id="minutes">
+    00
+  </span>
+  :
+  <span id="seconds">
+    00
+  </span>
+  :
+  <span id="centiseconds">
+    00
+  </span>
+
+  <span id="buttons">
+    <button id="start">Start</button>
+    <button id="reset">Reset</button>
+  </span>
+  
+
+  <script>
+    document.addEventListener('DOMContentLoaded', event => {
+      let hours = 0;
+      let minutes = 0;
+      let seconds = 0;
+      let centiseconds = 0;
+
+      let tick;
+
+      function tickUp() {
+        centiseconds += 1;
+        displayCurrent();
+      }
+
+      document.getElementById('start').addEventListener('click', event => {
+        event.preventDefault();
+
+        if (event.target.textContent === 'Start') {
+          tick = setInterval(tickUp, 10);
+          document.getElementById('start').textContent = 'Stop';
+        } else {
+          clearInterval(tick);
+          document.getElementById('start').textContent = 'Start';
+        }
+      });
+
+      document.getElementById('reset').addEventListener('click', event => {
+        event.preventDefault();
+        clearInterval(tick);
+        hours = 0;
+        minutes = 0;
+        seconds = 0;
+        centiseconds = 0;
+        displayCurrent();
+      });
+
+      function pad(num) {
+          num = num.toString();
+          while (num.length < 2) num = "0" + num;
+          return num;
+      }
+
+      function displayCurrent() {
+        let timeHours = document.getElementById('hours');
+        let timeMinutes = document.getElementById('minutes');
+        let timeSeconds = document.getElementById('seconds');
+        let timeCentiseconds = document.getElementById('centiseconds');
+
+        if (centiseconds > 99) {
+          seconds += 1;
+          centiseconds = 0;
+        }
+        if (seconds > 59) {
+          minutes += 1;
+          seconds = 0;
+        }
+        if (minutes > 59) {
+          hours += 1;
+          minutes = 0;
+        }
+
+        timeHours.innerText = pad(hours);
+        timeMinutes.innerText = pad(minutes);
+        timeSeconds.innerText = pad(seconds);
+        timeCentiseconds.innerText = pad(centiseconds);
+      }
+      
+    });
+  </script>
+</body>
+</html>

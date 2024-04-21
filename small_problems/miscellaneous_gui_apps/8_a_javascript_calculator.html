@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+  
+  <style>
+        body {
+      background: #22596e;
+    }
+    #calculator {
+      width: 350px;
+      height: 430px;
+      margin: 50px auto;
+      background: #fff;
+      border-radius: 4px;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    #screen {
+      height: 120px;
+      border-bottom: 1px solid #ccc;
+      box-sizing: border-box;
+      padding: 10px;
+      margin: 0 0 10px 0;
+      text-align: right;
+      position: relative;
+    }
+
+    #screen .current_num {
+      font-size: 36px;
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      margin: 0px;
+    }
+
+    #buttons a {
+      width: 82px;
+      height: 53px;
+      background: #ccc;
+      box-sizing: border-box;
+      padding: 15px 0 0 0;
+      text-align: center;
+      display: inline-block;
+      text-decoration: none;
+      color: #000;
+      margin-top: 5px;
+      font-size: 18px;
+      border-radius: 4px;
+    }
+
+    #bottons a:hover {
+      background: #bbb;
+    }
+  </style>
+
+  </head>
+<body>
+  
+  <div id="screen">
+    <p class="calculation"></p>
+    <p class="current_num">0</p>
+  </div>
+
+  <div id="buttons">
+
+    <a href="#" id="ce" class="control">CE</a>  
+    <a href="#" id="c" class="control">C</a>
+    <a href="#" id="neg" class="control">NEG</a>
+    <a href="#" class="op">/</a>  <!-- other divide sign as further exp -->
+    <a href="#" class="digit">7</a>
+    <a href="#" class="digit">8</a>
+    <a href="#" class="digit">9</a>
+    <a href="#" class="op">x</a>
+    <a href="#" class="digit">4</a>
+    <a href="#" class="digit">5</a>
+    <a href="#" class="digit">6</a>
+    <a href="#" class="op">-</a>
+    <a href="#" class="digit">1</a>
+    <a href="#" class="digit">2</a>
+    <a href="#" class="digit">3</a>
+    <a href="#" class="op">+</a>
+    <a href="#" class="digit">0</a>
+    <a href="#" class="dot">.</a>
+    <a href="#" class="op">%</a>
+    <a href="#" class="result_button">=</a>  
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', event => {
+      let buttons = document.querySelector('#buttons');
+      let currentNumLocation = document.querySelector('.current_num');
+      let currentNum = Number(currentNumLocation.textContent);
+      let calculationLocation = document.querySelector('.calculation');
+      let operator;
+      let savedNum;
+
+      buttons.addEventListener('click', event => {
+        event.preventDefault();
+
+        let buttonClass = event.target.getAttribute('class');
+
+        if (buttonClass === 'digit') {
+          currentNumLocation.textContent = digit(Number(event.target.textContent));
+        }
+
+        if (buttonClass === 'op') {
+          operation(event.target.textContent)
+        }
+
+        if (buttonClass === 'result_button') {
+          result();
+        }
+
+        if (buttonClass === 'control') {
+          control(event.target.textContent);
+        }
+      });
+
+
+      function digit(input) {
+        currentNum = currentNum * 10 + input;
+        return currentNum;
+      }
+
+      function operation(input) {
+        if (savedNum !== undefined) {
+          calculationLocation.textContent = calculationLocation.textContent + ' ' + currentNum + ' ' + input;
+          calculate();
+        } else {
+          calculationLocation.textContent = currentNum + ' ' + input;
+          savedNum = currentNum;
+          currentNum = 0;
+        }
+        operator = input;
+      }
+
+      function calculate() {
+        let result;
+        switch (operator) {
+          case '+':
+            result = savedNum + currentNum;
+            break;
+          case '-':
+            result = savedNum - currentNum;
+            break;
+          case 'x':
+            result = savedNum * currentNum;
+            break;
+          case '/':
+            result = savedNum / currentNum;
+            break;
+          case '%':
+            result = savedNum % currentNum;
+            break;
+        }
+
+        currentNumLocation.textContent = result;
+        savedNum = result;
+        currentNum = 0;
+        operator = '+';
+      }
+
+      function result() {
+        calculate();
+        currentNum = savedNum;
+        savedNum = 0;
+        calculationLocation.textContent = '';
+      }
+
+      function control(input) {
+        switch (input) {
+          case 'NEG':
+            currentNum = -currentNum;
+            currentNumLocation.textContent = currentNum;
+            break;
+          case 'CE':
+            currentNum = 0;
+            currentNumLocation.textContent = currentNum;
+            break;
+          case 'C':
+            currentNum = 0;
+            savedNum = undefined;
+            operator = undefined;
+            currentNumLocation.textContent = currentNum;
+            break;
+        }
+      }
+
+    });
+  </script>
+</body>
+</html>
