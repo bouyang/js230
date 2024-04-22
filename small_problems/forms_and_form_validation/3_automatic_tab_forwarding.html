@@ -1,0 +1,158 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Sign Up</title>
+</head>
+<header>
+
+</header>
+<body>
+  <form id="signUp">
+    <div>
+      <label for="firstName">First Name</label>
+      <input id="firstName" class="required name" required pattern="[a-zA-Z'\s]+">
+      <span id="errorFirstName"></span>
+    </div>
+    <div>
+      <label for="lastName">Last Name</label>
+      <input id="lastName" class="required name">
+      <span id="errorLastName"></span>
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input id="email" class="required" placeholder="someone@example.com">
+      <span id="errorEmail"></span>
+    </div>
+    <div>
+      <label for="password">Password</label>
+      <input id="password" class="required">
+      <span id="errorPassword"></span>
+    </div>
+    <div>
+      <label for="phoneNumber">Phone Number</label>
+      <input id="phoneNumber" placeholder="111-222-3333" class="numeric">
+      <span id="errorPhoneNumber"></span>
+    </div>
+    <div id="creditCardInput">
+      <label for="creditCard">Credit Card</label>
+      <input id="creditCard1" class="numeric" name="credit">-
+      <input id="creditCard2" class="numeric" name="credit">-
+      <input id="creditCard3" class="numeric" name="credit">-
+      <input id="creditCard4" class="numeric" name="credit">
+      <span id="errorCreditCard"></span>
+    </div>
+
+    <input type="submit" value="Sign up">
+  </form>
+
+<script>
+  document.addEventListener('DOMContentLoaded', event => {
+    let form = document.querySelector('form');
+    let header = document.querySelector('header');
+    let errors = true;
+
+    form.addEventListener('focusout', event => {
+      let targetBox = event.target;
+
+      let errorMessage = validInput(targetBox);
+
+      if (errorMessage === null) {
+        targetBox.nextElementSibling.innerHTML = '';
+      } else {
+        targetBox.nextElementSibling.innerHTML = errorMessage;
+      }
+    });
+
+    form.addEventListener('focusin', event => {
+      let targetBox = event.target;
+      targetBox.nextElementSibling.innerHTML = '';
+    });
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (checkInputs()) {
+        console.log('good');
+      } else {
+        header.innerHTML = 'Fix errors before submitting this form';
+      }
+    })
+    
+    form.addEventListener('keypress', event => {
+      if (event.target.classList.contains('name')) {
+        if (!/[a-zA-Z'\s]/.test(event.key)) {
+          event.preventDefault();
+        }
+      }
+    });
+
+    form.addEventListener('keypress', event => {
+      if (event.target.classList.contains('numeric')) {
+        if (!/[\d-]/.test(event.key)) {
+          event.preventDefault();
+        }
+      }
+      if (event.target.getAttribute('name', 'credit')) {
+        if (event.target.value.length >= 4) {
+          event.preventDefault();
+        }
+      }
+    });
+
+    document.getElementById('creditCardInput').addEventListener('keyup', event => {
+      let box1 = document.getElementById('creditCard1')
+      let box2 = document.getElementById('creditCard2');
+      let box3 = document.getElementById('creditCard3');
+      let box4 = document.getElementById('creditCard4');
+
+      if (event.target === box1 && event.target.value.length >= 4) {
+        box2.focus();
+      } else if (event.target === box2 && event.target.value.length >= 4) {
+        box3.focus();
+      } else if (event.target === box3 && event.target.value.length >= 4) {
+        box4.focus();
+      }
+    });
+
+    function validInput(targetBox) {
+      
+      if (targetBox.classList.contains('required')) {
+        if (targetBox.value.length === 0) {
+          return 'Required field';
+        }
+      }
+      if (targetBox['id'] === 'password') {
+        if (targetBox.value.length < 10) {
+          return 'Password must be at least 10 characters long';
+        }
+      }
+      if (targetBox['id'] === 'phoneNumber') {
+        if (!/^\d{3}-\d{3}-\d{4}$/.test(targetBox.value)) {
+          return 'Phone number must be in correct format';
+        }
+      }
+      if (targetBox['id'] === 'email') {
+        if (!/.+@.+/.test(targetBox.value)) {
+          return 'Email must be in correct format';
+        }
+      }
+      
+      return null;
+    }
+
+    function checkInputs() {
+      let inputs = document.querySelectorAll('input');
+      let result = true;
+
+      inputs.forEach(ele => {
+        if (validInput(ele) !== null) {
+          result = false;
+          console.log(ele);
+        }
+      });
+
+      return result;
+    }
+  });
+
+</script>
+</body>
+</html>

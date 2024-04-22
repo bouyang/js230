@@ -1,0 +1,109 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <title>Quiz</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<header>
+
+</header>
+<body>
+  <form id="quiz">
+
+  </form>
+
+  <script id="quizTemplate" type="text/x-handlebars">
+    <form id="{{id}}">
+      {{#each x}}
+        <ul>
+        Q{{id}}. {{description}}
+        {{#each options}}
+        <li>
+          <input type="radio" name="{{this}}">
+          <label for="{{this}}">{{this}}</label>
+        </li>
+        {{/each}}
+        <span id="feedback{{id}}"></span>
+        </ul>
+      {{/each}}
+      <input type="submit" id="submit">
+      <input type="reset" id="reset">
+    </form>
+  </script>
+
+  <script>
+
+    const questions = [
+    {
+      id: 1,
+      description: "Who is the author of <cite>The Hitchhiker's Guide to the Galaxy</cite>?",
+      options: ['Dan Simmons', 'Douglas Adams', 'Stephen Fry', 'Robert A. Heinlein'],
+    },
+    {
+      id: 2,
+      description: 'Which of the following numbers is the answer to Life, the \
+                    Universe and Everything?',
+      options: ['66', '13', '111', '42'],
+    },
+    {
+      id: 3,
+      description: 'What is Pan Galactic Gargle Blaster?',
+      options: ['A drink', 'A machine', 'A creature', 'None of the above'],
+    },
+    {
+      id: 4,
+      description: 'Which star system does Ford Prefect belong to?',
+      options: ['Aldebaran', 'Algol', 'Betelgeuse', 'Alpha Centauri'],
+    },
+  ];
+
+  const answerKey = { '1': 'Douglas Adams', '2': '42', '3': 'A drink', '4': 'Betelgeuse' };
+
+  let form = document.querySelector('form');
+  let answers = {};
+  
+
+  let quizTemplate = Handlebars.compile(document.getElementById('quizTemplate').innerHTML);
+  document.getElementById('quiz').innerHTML = quizTemplate({x: questions});
+
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+
+    let formData = new FormData(form);
+
+    let idx = 1;
+    for (let pair of formData.entries()) {
+      answers[String(idx)] = pair[0];
+      idx += 1;
+    }
+    checkAnswers(answers);
+  });
+
+  let button = document.getElementById('reset');
+  button.addEventListener('click', event => {
+    let span = document.querySelectorAll('span');
+    for (let i = 0; i < span.length; i += 1) {
+      span[i].innerHTML = '';
+    }
+    document.getElementById('submit').removeAttribute('disabled');
+  })
+
+  function checkAnswers(answers) {
+    let idx = 1;
+    for (let key in answerKey) {
+      if (answerKey[key] === answers[key]) {
+        document.getElementById(`feedback${idx}`).innerHTML = 'Correct Answer';
+      } else if (answers[key] === undefined) {
+        document.getElementById(`feedback${idx}`).innerHTML = `You didn't answer this question. The correct answer is: ${answerKey[key]}`;
+      } else {
+        document.getElementById(`feedback${idx}`).innerHTML = `Wrong Answer. The correct answer is: ${answerKey[key]}`;
+      }
+      idx += 1;
+    }
+    document.getElementById('submit').setAttribute('disabled', true);
+  }
+
+  </script>
+
+  
+</body>
