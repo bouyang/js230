@@ -3,26 +3,115 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+    <style>
+      #red, #blue, #green, #orange {
+        cursor: pointer;
+        color: white;
+        padding: 10px;
+        margin: 10px;
+      }
+    
+      #red {
+        width: 400px;
+        height: 400px;
+        background: red;
+      }
+
+      #blue {
+        width: 200px;
+        height: 200px;
+        background: blue;
+      }
+
+      #orange {
+        width: 100px;
+        height: 100px;
+        background: orange;
+      }
+
+      #green {
+        width: 50px;
+        height: 50px;
+        background: green;
+      }
+    </style>
   </head>
   <body>
-    <ul>
-      <li><a href="#" data-block="gold">Gold Sponsors</a></li>
-      <li><a href="#" data-block="silver">Silver Sponsors</a></li>
-      <li><a href="#" data-block="bronze">Bronze Sponsors</a></li>
-    </ul>
-    
-    <article data-block="gold">
-      <h1>Gold Sponsors</h1>
-    </article>
-    
-    <article data-block="silver">
-      <h1>Silver Sponsors</h1>
-    </article>
-    
-    <article data-block="bronze">
-      <h1>Bronze Sponsors</h1>
-    </article>
 
-    <script src="../test.js"></script>
+    <div id="red">Red
+      <div id="blue">Blue</div>
+      <div id="orange">Orange
+        <div id="green">Green</div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        let tracker = (() => {
+          let events = [];
+
+          return {
+            list() {
+            return events.slice();
+            },
+
+            elements() {
+              return this.list().map(event => event.target);
+            },
+
+            clear() {
+              events.length = 0;
+            },
+
+            add(event) {
+              events.push(event);
+            },
+
+          }
+          
+        })();
+
+        function track(callback) {
+          console.log(tracker.list());
+
+          return event => {
+            if (!(tracker.list().includes(event))) {
+            tracker.add(event);
+          }
+
+          callback(event);
+          }
+          
+          
+        }
+
+
+        let divRed = document.querySelector('#red');
+        let divBlue = document.querySelector('#blue');
+        let divOrange = document.querySelector('#orange');
+        let divGreen = document.querySelector('#green');
+
+
+        divRed.addEventListener('click', track(event => {
+          document.body.style.background = 'red';
+        }));
+
+        divBlue.addEventListener('click', track(event => {
+          event.stopPropagation();
+          document.body.style.background = 'blue';
+        }));
+
+        divOrange.addEventListener('click', track(event => {
+          document.body.style.background = 'orange';
+        }));
+
+        divGreen.addEventListener('click', track(event => {
+          document.body.style.background = 'green';
+        }));
+
+        console.log(tracker.list().length);
+        
+      });
+    </script>
   </body>
 </html>
