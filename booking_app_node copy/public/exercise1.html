@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
+    <style>
+      #bookings-list > li {
+      cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bookings</h1>
+    <ul id="bookings-list">
+    </ul>
+    
+
+    <script>
+
+      document.addEventListener('DOMContentLoaded', event => {
+
+        function cancelSchedule(scheduleId) {
+          let xhr = new XMLHttpRequest();
+          xhr.open('DELETE', `/api/schedules/${scheduleId}`);
+          xhr.send();
+
+          xhr.addEventListener('load', event => {
+            let status = xhr.status;
+
+            if (status === 403) {
+              console.log(xhr.responseText);
+            } else {
+              console.log('d3l3t3d');
+            }
+          });
+        }
+
+        function cancelBooking(bookingId) {
+          
+        }
+
+
+        // let ul = document.getElementById('bookings-list');
+
+        // function getDates() {
+        //   let dates = [];
+
+        //   let xhr = new XMLHttpRequest();
+        //   xhr.open('GET', '/api/bookings');
+        //   xhr.responseType = 'json';
+        //   xhr.send();
+
+        //   xhr.addEventListener('load', event => {
+        //     let response = xhr.response;
+        //     response.forEach(ele => {
+        //       dates.push(ele);
+        //     });
+
+        //     generateDates(dates);
+        //     getBookings();
+        //   });
+        // }
+
+        // function generateDates(dates) {
+        //   dates.forEach(date => {
+        //     let ele = document.createElement('li');
+        //     ele.setAttribute('id', date);
+        //     ele.textContent = date;
+        //     ul.appendChild(ele);
+        //   });
+        // }
+
+        // function getBookings() {
+        //   let date;
+
+        //   ul.addEventListener('click', event => {
+        //     let currentItem = event.target;
+        //     date = event.target.id;
+
+        //     let xhr = new XMLHttpRequest();
+        //     xhr.open('GET', `/api/bookings/${date}`);
+        //     xhr.responseType = 'json';
+        //     xhr.send();
+
+        //     xhr.addEventListener('load', event => {
+        //       let response = xhr.response;
+        //       response.forEach(booking => {
+        //         let ele = document.createElement('li');
+        //         ele.textContent = booking;
+        //         currentItem.appendChild(ele);
+        //       })
+        //     })
+        //   })
+        // }
+
+        // getDates();
+
+      //   let form = document.querySelector('form');
+      //   let select = document.getElementById('id');
+      //   let schedules;
+
+      //   populateSchedules();
+
+      //   function populateListBox(schedules) {
+      //     schedules.forEach(({id, staff_id, date, time}) => {
+      //       let row = document.createElement('option');
+      //       row.setAttribute('value', id);
+      //       row.textContent = `${staff_id} | ${date} | ${time}`;
+      //       select.appendChild(row);
+      //     });
+      //   }
+
+      //   function populateSchedules() {
+      //     select.innerHTML = '';
+      //     let availableSchedules = [];
+      //     const xhr = new XMLHttpRequest();
+      //     xhr.open('GET', '/api/schedules');
+      //     xhr.send();
+
+      //     xhr.addEventListener('load', event => {
+      //       let response = JSON.parse(xhr.responseText);
+      //       console.log(response);
+      //       response.forEach(schedule => {
+      //         if (schedule['student_email'] === null) {
+      //           availableSchedules.push(schedule);
+      //         }
+      //       });
+
+      //       populateListBox(availableSchedules);
+
+      //     });
+      //   }
+
+      //   form.addEventListener('submit', event => {
+      //     event.preventDefault();
+      //     let data = new FormData(form);
+      //     let json = JSON.stringify(formDataToJson(data));
+      //     let xhr = new XMLHttpRequest();
+      //     xhr.open('POST', '/api/bookings');
+      //     xhr.setRequestHeader('Content-Type', 'application/json; charset=urf-8')
+      //     xhr.send(json);
+
+      //     xhr.addEventListener('load', event => {
+      //       // console.log(xhr.responseText);
+      //       // console.log(xhr.status);
+      //       // console.log(xhr.statusText);
+      //       let status = xhr.status
+
+      //       if (status === 204) {
+      //         console.log('booked');
+      //       } else {
+      //         console.log(xhr.responseText);
+      //         let bookingSequence = xhr.responseText.split(' ')[xhr.responseText.split(' ').length - 1];
+      //         console.log(bookingSequence);
+
+      //         showBookingTemplate({email: form['student_email'].value, bookingSequence});
+
+      //         let studentForm = document.getElementById('newStudentForm');
+
+      //         studentForm.addEventListener('submit', event => {
+      //           event.preventDefault();
+      //           let data = new FormData(studentForm);
+      //           let json = JSON.stringify(formDataToJson(data));
+                
+      //           let xhr = new XMLHttpRequest();
+      //           xhr.open('POST', '/api/students');
+      //           xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+      //           xhr.send(json);
+
+      //           xhr.addEventListener('load', event => {
+      //             console.log(xhr.responseText);
+      //           })
+      //         });
+      //       }
+      //     });
+          
+      //   });
+
+
+      //   function showBookingTemplate(data) {
+      //   const newStudentForm = document.createElement('form');
+      //   newStudentForm.setAttribute('method', 'post');
+      //   newStudentForm.setAttribute('action', '/api/students');
+      //   newStudentForm.setAttribute('id', 'newStudentForm');
+
+      //   const h1 = document.createElement('h1');
+      //   h1.textContent = 'Please provide new student details';
+      //   newStudentForm.appendChild(h1);
+
+      //   const emailLabel = document.createElement('label');
+      //   emailLabel.textContent = 'Email:';
+      //   emailLabel.setAttribute('for', 'email');
+      //   newStudentForm.appendChild(emailLabel);
+
+      //   const emailInput = document.createElement('input');
+      //   emailInput.setAttribute('type', 'email');
+      //   emailInput.setAttribute('name', 'email');
+      //   emailInput.setAttribute('id', 'email');
+      //   emailInput.setAttribute('value', data.email);
+      //   newStudentForm.appendChild(emailInput);
+      //   newStudentForm.appendChild(document.createElement('br'));
+
+      //   const nameLabel = document.createElement('label');
+      //   nameLabel.textContent = 'Name:';
+      //   nameLabel.setAttribute('for', 'name');
+      //   newStudentForm.appendChild(nameLabel);
+
+      //   const nameInput = document.createElement('input');
+      //   nameInput.setAttribute('type', 'text');
+      //   nameInput.setAttribute('name', 'name');
+      //   nameInput.setAttribute('id', 'name');
+      //   newStudentForm.appendChild(nameInput);
+      //   newStudentForm.appendChild(document.createElement('br'));
+
+      //   const bookingSequenceLabel = document.createElement('label');
+      //   bookingSequenceLabel.textContent = 'Booking Sequence:';
+      //   bookingSequenceLabel.setAttribute('for', 'booking_sequence');
+      //   newStudentForm.appendChild(bookingSequenceLabel);
+
+      //   const bookingSequenceInput = document.createElement('input');
+      //   bookingSequenceInput.setAttribute('type', 'text');
+      //   bookingSequenceInput.setAttribute('name', 'booking_sequence');
+      //   bookingSequenceInput.setAttribute('id', 'booking_sequence');
+      //   bookingSequenceInput.setAttribute('value', data.bookingSequence);
+      //   newStudentForm.appendChild(bookingSequenceInput);
+      //   newStudentForm.appendChild(document.createElement('br'));
+
+      //   const submitInput = document.createElement('input');
+      //   submitInput.setAttribute('type', 'submit');
+      //   newStudentForm.appendChild(submitInput);
+      //   document.querySelector('body').appendChild(newStudentForm);
+      // }
+
+      //   function formDataToJson(data) {
+      //     let result = {};
+      //     data.entries().forEach(entry => {
+      //       result[entry[0]] = entry[1];
+      //     });
+      //     console.log(result);
+      //     return result;
+      //   }
+
+
+        // let staffs;
+        // let number = 0;
+        // let btnSubmit = document.getElementById('btnSubmit');
+        // let btnAdd = document.getElementById('btnAdd');
+        // let form = document.querySelector('form');
+
+        // (() => {
+        //   let xhr = new XMLHttpRequest();
+        //   xhr.open('GET', '/api/staff_members');
+        //   xhr.responseType = 'json';
+        //   xhr.send();
+
+        //   xhr.addEventListener('load', event => {
+        //     staffs = xhr.response;
+        //   });
+        // })();
+        
+
+        // btnAdd.addEventListener('click', event => {
+        //   event.preventDefault();
+          
+        //   const el = document.createElement('fieldset');
+        //   number += 1;
+        //   el.id = `schedule_${String(number)}`;
+        //   el.appendChild(scheduleTemplate({ number: number, staffs }));
+        //   document.querySelector('#schedules').appendChild(el);
+        // });
+
+        // form.addEventListener('submit', event => {
+        //   event.preventDefault();
+        //   let form = document.querySelector('form');
+        //   let data = new FormData(form);
+        //   let json = JSON.stringify(formDataToJson(data));
+
+        //   let xhr = new XMLHttpRequest();
+        //   xhr.open('POST', form.action);
+        //   xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+        //   xhr.send(json);
+
+        //   xhr.addEventListener('load', event => {
+        //     console.log(xhr.responseText);
+        //   });
+        // });
+
+        // function formDataToJson(data) {
+        //   let result = [];
+        //   let temp = {};
+        //   data = data.entries();
+        //   data.forEach((ele, idx) => {
+        //     if (idx % 3 === 0 && idx !== 0) {
+        //       result.push(temp);
+        //       temp = {};
+        //     }
+        //     let key = ele[0].split('_')[0];
+        //     if (key === 'staff') key = 'staff_id';
+        //     let value = ele[1];
+        //     temp[key] = value;
+        //   });
+        //   result.push(temp);
+
+        //   return {schedules: result};
+        // }
+
+
+
+
+
+        // function addStaff() {
+          
+        //   let form = document.querySelector('form');
+
+        //   form.addEventListener('submit', event => {
+        //     event.preventDefault();
+        //     let data = new FormData(form);
+        //     let result = {};
+
+        //     data.entries().forEach(ele => {
+        //       result[ele[0]] = ele[1];
+        //     });
+
+        //     const xhr = new XMLHttpRequest();
+        //     xhr.open('POST', form.action);
+        //     xhr.setRequestHeader('Content-Type', 'application/json');
+        //     xhr.send(JSON.stringify(result));
+
+        //     xhr.addEventListener('load', event => {
+        //       if (xhr.status === 201) {
+        //         let newID = JSON.parse(xhr.responseText);
+        //         console.log(`new staff created with ${newID['id']}`);
+        //         form.reset();
+        //       } else {
+        //         console.error(xhr.responseText);
+        //       }
+              
+        //     })
+        //   });
+
+          
+
+          
+          
+          
+        // }
+
+        // addStaff();
+
+
+        // function retrieveSchedules() {
+        //   let result = [];
+        //   let xhr = new XMLHttpRequest();
+        //   xhr.open('GET', '/api/schedules');
+        //   xhr.timeout = 5000;
+        //   xhr.responseType = 'json';
+        //   xhr.send();
+
+        //   xhr.addEventListener('load', event => {
+        //     let schedules = xhr.response;
+
+        //     for (let i = 0; i < schedules.length; i += 1) {
+        //       let staffId = schedules[i]['staff_id'];
+        //       result[`staff ${staffId}`] = result[`staff ${staffId}`] || 0;
+        //       result[`staff ${staffId}`] += 1;
+        //     }
+
+        //     console.log(result);
+        //   });
+
+        //   xhr.addEventListener('timeout', event => {
+        //     console.error('timeout error');
+        //   });
+
+        //   xhr.addEventListener('loadend', event => {
+        //     console.log('The request is complete');
+        //   })
+        // }
+
+        // // retrieveSchedules();
+        
+      });
+
+      
+    </script>
+  </body>
+</html>

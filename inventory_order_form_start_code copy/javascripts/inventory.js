@@ -6,8 +6,9 @@ var inventory;
     collection: [],
     setDate: function() {
       var date = new Date();
+      let order_date = document.getElementById('order_date');
+      order_date.textContent = date.toUTCString();
       // $("#order_date").text(date.toUTCString());
-      document.querySelector('#order_date').textContent = date.toUTCString();
     },
     cacheTemplate: function() {
       var $iTmpl = $("#inventory_item").remove();
@@ -54,9 +55,6 @@ var inventory;
       e.preventDefault();
       var item = this.add(),
           $item = $(this.template.replace(/ID/g, item.id));
-
-          console.log(item);
-          console.log($item);
 
       $("#inventory").append($item);
     },

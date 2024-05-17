@@ -69,17 +69,7 @@ a.favorite {
 }
 
 #slides figure + figure {
-  opacity: 0;
-}
-
-#slides .hide {
-  opacity: 0;
-  transition: opacity 800ms;
-}
-
-#slides .show {
-  opacity: 1;
-  transition: opacity 800ms;
+  display: none;
 }
 
 #slides img {

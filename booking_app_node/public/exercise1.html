@@ -1,21 +1,76 @@
 <!doctype html>
 <html lang="en-US">
   <head>
-    <meta charset="utf-8">
-    <title>Exercise 6</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.js"></script>
     <style>
-      #bookings-list > li {
-      cursor: pointer;
-      }
+      
     </style>
   </head>
   <body>
+    
     <h1>Bookings</h1>
-    <ul id="bookings-list">
+    <ul id="dates">
+
     </ul>
 
+
     
+
+    <script>
+
+      document.addEventListener('DOMContentLoaded', event => {
+        function getDates() {
+          let datesSection = document.getElementById('dates');
+
+          let xhr = new XMLHttpRequest();
+          xhr.open('GET', '/api/bookings');
+          xhr.responseType = 'json';
+          xhr.send();
+
+          xhr.addEventListener('load', event => {
+            let response = xhr.response;
+            response.forEach(ele => {
+              let element = document.createElement('li');
+              element.textContent = ele;
+              element.id = ele;
+              datesSection.appendChild(element);
+            });
+
+            addBookings();
+          });
+        }
+
+        function addBookings() {
+          let datesSection = document.getElementById('dates');
+
+          datesSection.addEventListener('click', event => {
+            let item = event.target;
+            let itemId = event.target.id;
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', `/api/bookings/${itemId}`);
+            xhr.responseType = 'json';
+            xhr.send();
+
+            xhr.addEventListener('load', event => {
+              let response = xhr.response;
+              let ul = document.createElement('ul');
+              item.appendChild(ul);
+              response.forEach(ele => {
+                let element = document.createElement('li');
+                element.textContent = `${ele[0]} | ${ele[1]} | ${ele[2]}`;
+                ul.appendChild(element);
+              })
+            })
+          })
+        }
+
+        getDates();
+
+      });
+
+      
+    </script>
   </body>
 </html>
-
-<script src="./javascripts/exercise1.js"></script>

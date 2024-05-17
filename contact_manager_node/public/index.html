@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Contact Manager</title>
+  <script src="/javascripts/jquery.js"></script>
+  <script src="/javascripts/handlebars.js"></script>
+  <link rel="stylesheet" href="/stylesheets/contact.css">
+</head>
+<body>
+  <h1>Contact Manager</h1>
+
+  <div id="topSection">
+    <button id="addContact">Add Contact</button>
+
+    <input type="text" placeholder="Search" id="search">
+
+    <div id="tagsSection">
+      
+    </div>
+  </div>
+
+  <div>
+    <ul id="contactsList" style='display:inline'>
+    </ul>
+  </div>
+
+  <script id="newContactTemplate" type="text/x-handlebars">
+    <form id="contactForm" method='POST' action='/api/contacts/' style='display:inline'>
+      <ul>
+        <li>
+          <label for='full_name'>Full name:</label>
+          <input type='text' id='full_name' name='full_name'>
+          <span class='full_name_error error'></span>
+        </li>
+        <li>
+          <label for='email'>Email address:</label>
+          <input type='email' id='email' name='email'>
+          <span class='email_error error'></span>
+        </li>
+        <li>
+          <label for='phone_number'>Telephone number:</label>
+          <input type='text' id='phone_number' name='phone_number'>
+          <span class='phone_number_error error'></span>
+        </li>
+        <li>
+          <label for='tags'>Tags:</label>
+          {{#each tag}}
+            <label for='tag_{{this}}'>{{this}}
+            <input type='checkbox' name='tag_{{this}}' value='{{this}}'>
+          {{/each}}
+        </li>
+
+      <input type='submit'>
+      <input type='button' value='Cancel'>
+    </form>
+  </script>
+
+  <script id="contactsListTemplate" type="text/x-handlebars">
+    {{#each item}}
+      {{> contactsItemTemplate}}
+    {{/each}}
+  </script>
+
+  <script id="contactsItemTemplate" type="text/x-handlebars">
+    <li>
+      <div>
+        <h3>{{full_name}}</h3>
+      </div>
+      <div class='contactInfo'>
+        <dl>
+          <dt><b>Phone Number: </b></dt>
+          <dd>{{phone_number}}</dd>
+          <dt><b>Email: </b></dt>
+          <dd>{{email}}</dd>
+          <dt><b>Tags: </b></dt>
+          <dd>{{tags}}</dd>
+        </dl>
+      </div>
+      <input type='button' value='Edit' id='edit_{{id}}'>
+      <input type='button' value='Delete' id='delete_{{id}}'>
+    </li>
+  </script>
+
+  <script id="editItemTemplate" type="text/x-handlebars">
+    <form id="editItemForm" method='PUT' action='/api/contacts/{{id}}' style='display:inline'>
+      <ul>
+        <li>
+          <label for='full_name'>Full name:</label>
+          <input type='text' id='edit_full_name' name='full_name' value='{{full_name}}'>
+          <span class='full_name_error error'></span>
+        </li>
+        <li>
+          <label for='email'>Email address:</label>
+          <input type='email' id='edit_email' name='email' value='{{email}}'>
+          <span class='email_error error'></span>
+        </li>
+        <li>
+          <label for='phone_number'>Telephone number:</label>
+          <input type='text' id='edit_phone_number' name='phone_number' value='{{phone_number}}'>
+          <span class='phone_number_error error'></span>
+        </li>
+        <li>
+          <label for='tags'>Tags:</label>
+          {{#each tag}}
+            <label for='tag_{{this}}'>{{this}}
+            <input type='checkbox' name='tag_{{this}}' value='{{this}}'>
+          {{/each}}
+        </li>
+
+      <input type='submit'>
+      <input type='button' value='Cancel'>
+    </form>
+  </script>
+
+  <script id="tagTemplate" type="text/x-handlebars">
+    <ul id="tagsSelection">Tags:
+      <li id="createTag">Create A Tag</li>
+      <li id="selectAllTags">Select All Tags</li>
+      {{#if tag}}
+        <ul id="filterBy">Filter By:
+          {{#each tag}}
+            <li id='tag_{{this}}'>{{this}}</li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    </ul>
+    <div id="createTagSection"></div>
+  </script>
+
+  <script id="createTagFormTemplate" type="text/x-handlebars">
+    <form id="createTagForm" style='display:inline'>
+      <label for='newTag'>New Tag:</label>
+      <input type='text' id='newTag' name='newTag'>
+      <input type='submit'>
+      <input type='button' value='Cancel'>
+      <span id='tagError'></span>
+    </form>
+  </script>
+
+
+  <script src="/javascripts/contact.js"></script>
+</body>
+</html>

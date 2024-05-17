@@ -1,114 +1,136 @@
-
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', event => {
   const message = document.querySelector("#message");
   const letters = document.querySelector("#spaces");
   const guesses = document.querySelector("#guesses");
   const apples = document.querySelector("#apples");
   const replay = document.querySelector("#replay");
 
-  let randomWord = (function() {
-    let wordBank = ['apple', 'banana', 'orange', 'pear'];
-  
+  var randomWord = function() {
+    var words = ['APPLE', 'BANANA', 'ORANGE', 'PEAR'];
+
     return function() {
-      let randomNum = Math.floor(Math.random() * wordBank.length);
-      let randomWord = wordBank[randomNum];
-      wordBank.splice(randomNum, 1);
-  
-      return randomWord;
-    }
-  })();
+      var word = words[Math.floor(Math.random() * words.length)];
+      words.splice(words.indexOf(word), 1);
+      return word;
+    };
+  }();
 
-  class Game {
-    constructor() {
-      this.target = randomWord();
-      this.maxGuesses = 6;
-      this.numGuesses = 0;
-      this.guessed = [];
-      this.correct = [];
-  
-      if (this.target === undefined) {
-        this.displayMessage('Sorry Ive run out of words');
-      } else {
-        this.createBlanks();
+  function Game() {
+    this.targetWord;
+    this.incorrectGuesses = 0;
+    this.guessedLetters = [];
+    this.allowedGuesses = 6;
+
+    this.init();
+  }
+
+  Game.prototype = {
+    draw: function() {
+      if (this.incorrectGuesses > 0) {
+        apples.classList.add(`guess_${this.incorrectGuesses}`);
       }
-    }
-  
-    createBlanks() {
-      letters.innerHTML = '<h2>Word:</h2>';
-      guesses.innerHTML = '<h2>Guesses:</h2>';
-      document.querySelector(`#apples`).removeAttribute('class');
-      this.displayMessage('');
+      
+    },
 
-      for (let i = 0; i < this.target.length; i += 1) {
-        let x = document.createElement('span');
-        x.setAttribute('id', `guess${i}`);
-        letters.appendChild(x);
+    reset: function() {
+      document.querySelectorAll('span').forEach(item => item.remove());
+      apples.classList.remove(...apples.classList);
+    },
+
+    createWord: function() {
+      for (let i = 0; i < this.targetWord.length; i += 1) {
+        let ele = document.createElement('span');
+        ele.id = `word_${i}`;
+        letters.appendChild(ele);
       }
-    }
+    },
 
-    displayMessage(msg) {
+    drawWord: function() {
+      let recentGuess = this.guessedLetters[this.guessedLetters.length - 1];
+
+      let targetWordLetters = this.targetWord.split('');
+
+      for (let i = 0; i < targetWordLetters.length; i += 1) {
+        if (targetWordLetters[i] === recentGuess) {
+          document.getElementById(`word_${i}`).textContent = recentGuess;
+        }
+      }
+    },
+
+    drawGuesses: function() {
+      let recentGuess = this.guessedLetters[this.guessedLetters.length - 1];
+
+      let ele = document.createElement('span');
+      ele.textContent = recentGuess;
+      guesses.appendChild(ele);
+
+    },
+
+    evaluateGuess: function(key) {
+      let targetWordLetters = this.targetWord.split('');
+      if (!targetWordLetters.includes(key)) {
+        this.incorrectGuesses += 1;
+        apples.classList.remove(...apples.classList);
+        apples.classList.add("guess_" + this.incorrectGuesses);
+      }
+      
+    },
+
+    evaluateWin: function() {
+      if (this.incorrectGuesses >= this.allowedGuesses) {
+        this.displayMessage('You lose');
+        removeEventListener('keyup', handleKeyUp);
+      }
+    },
+
+    displayMessage: function(msg) {
       message.textContent = msg;
+    },
+
+    init: function() {
+      this.reset();
+
+      this.targetWord = randomWord();
+      if (this.targetWord === undefined) {
+        console.log('Sorry I run out of words');
+        return;
+      }
+
+      this.incorrectGuesses = 0;
+      this.guessedLetters = [];
+
+      this.draw();
+      this.createWord();
     }
   }
 
-  let game = new Game();
-
-  function checkGuess(key) {
-    let index = [];
-
-    game.target.split('').forEach((letter, idx) => {
-      if (letter === key) {
-        index.push(idx);
-        game.correct.push(key);
-      }
-    });
-
-    if (index.length === 0) {
-      wrongGuess();
-    } else {
-      index.forEach(idx => {
-        document.getElementById(`guess${idx}`).textContent = key;
-      });
-    }
-  }
-
-  function wrongGuess() {
-    game.numGuesses += 1;
-    document.querySelector(`#apples`).setAttribute('class', `guess_${game.numGuesses}`);
-  }
-
-  document.addEventListener('keyup', event => {
-    let key;
-    if (event.key.charCodeAt(0) >= 97 && event.key.charCodeAt(0) <= 122) {
-      key = event.key;
-
-      if (!game.guessed.includes(key)) {
-
-        checkGuess(key);
-
-        game.guessed.push(key);
-
-        let x = document.createElement('span');
-        x.textContent = key;
-        guesses.appendChild(x);
-      }
-
-      if (game.numGuesses === game.maxGuesses) {
-        document.removeEventListener('keyup', event);
-        game.displayMessage('You lost!')
-      }
-    
-      if (game.target.split('').filter((ele, idx, self) => self.indexOf(ele) === idx).length === game.correct.length) {
-        document.removeEventListener('keyup', event);
-        game.displayMessage('You won!');
-      }
-    }
-  });
-
-  replay.addEventListener('click', event => {
+  let handleKeyUp = (event) => {
     event.preventDefault();
-    game = new Game();
+
+    let key = String.fromCharCode(event.which);
+
+    if (event.which >= 65 && event.which <= 90) {
+      if (x.guessedLetters.includes(key)) {
+        return;
+      } else {
+        x.guessedLetters.push(key);
+        // console.log(x.guessedLetters);
+      }
+    }
+
+    x.evaluateGuess(key);
+    x.draw();
+    x.drawWord();
+    x.drawGuesses();
+    x.evaluateWin();
+  };
+  document.addEventListener('keyup', handleKeyUp);
+
+  document.getElementById('replay').addEventListener('click', event => {
+    event.preventDefault();
+    new Game();
   })
+
+  let x = new Game();
 
 });
